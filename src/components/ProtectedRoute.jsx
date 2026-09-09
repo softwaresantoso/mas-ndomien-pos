@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { AppShell } from './AppShell';
 
 /**
  * Client-side route guard — this is UX convenience only. The real
@@ -13,5 +14,5 @@ export function ProtectedRoute({ allow, children }) {
   if (!firebaseUser || !isActive) return <Navigate to="/login" replace />;
   if (allow && !allow.includes(role)) return <Navigate to="/app/forbidden" replace />;
 
-  return children;
+  return <AppShell>{children}</AppShell>;
 }

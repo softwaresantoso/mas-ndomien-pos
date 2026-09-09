@@ -27,7 +27,7 @@ Lihat `MENU-DATA.md` untuk sumber data menu dan item yang masih perlu verifikasi
 
 **Data menu**
 - [x] `MENU-DATA.md` — hasil ekstraksi 4 foto menu, dengan tabel konflik harga & item yang perlu verifikasi
-- [x] `scripts/seed-menu.js` — seed business info + 11 kategori + **44 produk terverifikasi** dari kartu menu resmi (foto 3 & 4). Item dengan harga bentrok/tidak terbaca (lihat `MENU-DATA.md` §2–4) **tidak** ikut di-seed.
+- [x] `scripts/seed-menu.js` — seed business info + 11 kategori + **54 produk terverifikasi** dari kartu menu resmi (foto 3 & 4). Item dengan harga bentrok/tidak terbaca (lihat `MENU-DATA.md` §2–4) **tidak** ikut di-seed.
 
 ## Cara menjalankan (di komputer Anda — environment saya tidak punya akses jaringan)
 
