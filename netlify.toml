@@ -1,0 +1,11 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Vite outputs a single-page app — without this, refreshing on a route like
+# /order/menu or /app/dashboard returns a raw 404 from Netlify's static
+# host instead of letting React Router handle it client-side.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
