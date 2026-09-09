@@ -8,7 +8,11 @@ import { assertValidOrderTransition } from '../lib/orderStateMachine';
 
 const ordersRef = () => collection(db, 'businesses', BUSINESS_ID, 'orders');
 const orderDoc = (orderId) => doc(db, 'businesses', BUSINESS_ID, 'orders', orderId);
-const countersDoc = () => doc(db, 'businesses', BUSINESS_ID, 'settings', 'orderCounters');
+// Kept in its own top-level "counters" collection (not under settings/),
+// because customers must be able to write to it without auth — see the
+// dedicated Security Rule for this path. It only ever holds an integer
+// counter per day, never business-sensitive data.
+const countersDoc = () => doc(db, 'businesses', BUSINESS_ID, 'counters', 'orderCounters');
 
 function todayKey(date = new Date()) {
   const y = date.getFullYear();

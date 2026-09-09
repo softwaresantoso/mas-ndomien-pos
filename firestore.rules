@@ -83,6 +83,15 @@ service cloud.firestore {
         allow write: if isOwner(businessId);
       }
 
+      // Order-number counter — deliberately separate from settings/ above.
+      // Customers (unauthenticated) must be able to increment this during
+      // checkout; it only ever holds an integer count per day, never
+      // business-sensitive config, so public read/write is an acceptable
+      // trade-off here.
+      match /counters/{counterId} {
+        allow read, write: if true;
+      }
+
       // ---- reservations -------------------------------------------
       match /reservations/{reservationId} {
         allow create: if true;

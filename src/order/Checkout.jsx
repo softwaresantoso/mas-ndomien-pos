@@ -35,7 +35,9 @@ export default function Checkout() {
       clearCart();
       navigate(`/order/track/${id}`);
     } catch (e) {
-      // Never surface raw Firebase errors to the customer (product-40).
+      // Never surface raw Firebase errors to the customer (product-40) —
+      // but do log the real error for debugging via browser DevTools Console.
+      console.error('createOrder failed:', e);
       setError('Pesanan belum berhasil dikirim. Periksa koneksi dan coba lagi.');
       setSubmitting(false);
     }
