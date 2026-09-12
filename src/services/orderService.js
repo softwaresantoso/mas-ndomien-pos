@@ -1,5 +1,5 @@
 import {
-  collection, doc, runTransaction, onSnapshot, query, where, orderBy,
+  collection, doc, runTransaction, onSnapshot, query, where, orderBy, limit,
   serverTimestamp, Timestamp
 } from 'firebase/firestore';
 import { db, BUSINESS_ID } from '../lib/firebase';
@@ -117,5 +117,18 @@ export function subscribeActiveOrders(callback) {
 export function subscribeOrder(orderId, callback) {
   return onSnapshot(orderDoc(orderId), (snap) => {
     callback(snap.exists() ? { id: snap.id, ...snap.data() } : null);
+  });
+}
+
+/**
+ * Realtime subscription for the admin Order Management list — all orders
+ * (any status), newest first. Filtering by status/payment/search is done
+ * client-side in the UI rather than via more Firestore query variants, so
+ * this single subscription/index covers every filter tab (product-25).
+ */
+export function subscribeAllOrders(callback, { limitCount = 200 } = {}) {
+  const q = query(ordersRef(), orderBy('createdAt', 'desc'), limit(limitCount));
+  return onSnapshot(q, (snap) => {
+    callback(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
   });
 }
