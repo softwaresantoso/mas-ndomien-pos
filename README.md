@@ -50,6 +50,14 @@ Lihat `MENU-DATA.md` untuk sumber data menu dan item yang masih perlu verifikasi
 - [x] `KitchenTicketCard` — font & tombol besar sesuai brief (nomor order, badge nomor meja, daftar item + modifier, catatan customer disorot merah), tombol "MULAI PROSES" / "TANDAI SIAP" otomatis sesuai status
 - [x] Filter station memfilter baik daftar order maupun item yang ditampilkan di tiap tiket — order campuran (makanan + minuman) tetap muncul di kedua tab tapi item yang ditampilkan disesuaikan
 
+**Step 9 — Cashier / POS**
+- [x] `paymentService.recordPayment` — transaction atomik: catat dokumen `payments/{id}` + update `paymentStatus` order sekaligus. Kalau order sudah `SERVED`/`PICKED_UP` dan pembayaran lunas penuh, otomatis lanjut ke `COMPLETED` (transaksi resmi selesai)
+- [x] `Cashier` (`/app/cashier`) — tab "Belum Lunas" (semua order menunggu pembayaran, tersortir dari yang tertua) dan "Riwayat" (transaksi terbaru)
+- [x] `PaymentPanel` — pilih metode (Cash/QRIS/Transfer/Lainnya), untuk Cash ada input jumlah dibayar + hitung kembalian otomatis, validasi tidak bisa submit kalau bayar kurang
+- [x] Struktur `payments` collection future-ready untuk payment gateway (field `reference`, `paidAmount`, `change`, `cashierId` terpisah dari data order) sesuai brief §23
+
+## Cara menjalankan (di komputer Anda — environment saya tidak punya akses jaringan)
+
 ```bash
 npm install
 cp .env.example .env.local   # isi dengan kredensial Firebase project Anda
@@ -61,7 +69,6 @@ Deploy security rules (jalankan lagi tiap `firestore.rules` berubah): `firebase 
 
 ## Yang BELUM dibuat (menyusul sesuai roadmap di ARCHITECTURE.md §9)
 
-- Step 9: Cashier/POS
 - Step 10: Reservation booking engine (logic sudah dirancang di ARCHITECTURE.md §6, UI & service layer belum)
 - Step 11: Owner dashboard + reports
 - Step 12: PWA polish, offline banner, QA pass
@@ -70,8 +77,8 @@ Deploy security rules (jalankan lagi tiap `firestore.rules` berubah): `firebase 
 
 1. **Konfirmasi harga** untuk 10 item yang bentrok antar foto (`MENU-DATA.md` §2), dan apakah item di §3 (Nugget Hotplate, Gado-gado, Somay) masih dijual.
 2. Foto ulang bagian "Menu Baru" di Foto 1 yang harganya terpotong (`MENU-DATA.md` §4), kalau item-item itu masih relevan.
-3. **Untuk testing Kitchen Display**: butuh akun staff dengan role `KITCHEN_CASHIER` (bukan cuma OWNER) — buat manual sama seperti akun OWNER (lihat bagian di bawah), tapi field `role` isi `KITCHEN_CASHIER`.
-4. Modul mana selanjutnya: Cashier/POS atau Reservation?
+3. **Untuk testing Kitchen Display & Cashier**: butuh akun staff dengan role `KITCHEN_CASHIER` (bukan cuma OWNER) — buat manual sama seperti akun OWNER, tapi field `role` isi `KITCHEN_CASHIER`.
+4. Modul mana selanjutnya: Reservation, atau langsung Owner Dashboard?
 
 ## Setup akun staff pertama (perlu sebelum masuk /app/*)
 
