@@ -67,8 +67,14 @@ export const STATION = {
 // Legal transitions for the order state machine.
 // Enforced in src/lib/orderStateMachine.js — do not mutate orderStatus
 // anywhere else in the codebase.
+// PENDING -> PROCESSING is allowed directly (in addition to the
+// PENDING -> CONFIRMED -> PROCESSING path) because most small restaurants
+// don't gate every order behind an explicit admin confirmation — the
+// kitchen needs to be able to start cooking the moment an order arrives.
+// Admin can still use CONFIRMED as an explicit checkpoint when they want
+// one (e.g. verifying a take-away order's details first).
 export const ORDER_STATUS_TRANSITIONS = {
-  [ORDER_STATUS.PENDING]: [ORDER_STATUS.CONFIRMED, ORDER_STATUS.CANCELLED],
+  [ORDER_STATUS.PENDING]: [ORDER_STATUS.CONFIRMED, ORDER_STATUS.PROCESSING, ORDER_STATUS.CANCELLED],
   [ORDER_STATUS.CONFIRMED]: [ORDER_STATUS.PROCESSING, ORDER_STATUS.CANCELLED],
   [ORDER_STATUS.PROCESSING]: [ORDER_STATUS.READY],
   [ORDER_STATUS.READY]: [ORDER_STATUS.SERVED, ORDER_STATUS.PICKED_UP],
