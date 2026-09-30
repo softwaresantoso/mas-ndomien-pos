@@ -6,7 +6,12 @@ const STATUS_COLOR = {
   SERVED: 'bg-status-completed/15 text-status-completed',
   PICKED_UP: 'bg-status-completed/15 text-status-completed',
   COMPLETED: 'bg-status-completed/15 text-status-completed',
-  CANCELLED: 'bg-status-cancelled/15 text-status-cancelled'
+  CANCELLED: 'bg-status-cancelled/15 text-status-cancelled',
+  // Reservation-specific statuses
+  ARRIVED: 'bg-status-processing/15 text-status-processing',
+  SEATED: 'bg-status-ready/15 text-status-ready',
+  REJECTED: 'bg-status-cancelled/15 text-status-cancelled',
+  NO_SHOW: 'bg-status-cancelled/15 text-status-cancelled'
 };
 
 export function Badge({ status, children, className = '' }) {

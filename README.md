@@ -56,6 +56,14 @@ Lihat `MENU-DATA.md` untuk sumber data menu dan item yang masih perlu verifikasi
 - [x] `PaymentPanel` — pilih metode (Cash/QRIS/Transfer/Lainnya), untuk Cash ada input jumlah dibayar + hitung kembalian otomatis, validasi tidak bisa submit kalau bayar kurang
 - [x] Struktur `payments` collection future-ready untuk payment gateway (field `reference`, `paidAmount`, `change`, `cashierId` terpisah dari data order) sesuai brief §23
 
+**Step 10 — Reservation (customer + admin)**
+- [x] `reservationStateMachine.js` — mirror pola `orderStateMachine.js`, transisi legal: `PENDING → CONFIRMED/REJECTED/CANCELLED`, `CONFIRMED → ARRIVED/CANCELLED/NO_SHOW`, `ARRIVED → SEATED → COMPLETED`
+- [x] `reservationService.js` — generate kode `RSV-YYMMDD-XXX` via counter atomic (sama pola dengan nomor order); **cegah double-booking**: `confirmReservation` mengecek konflik jadwal (meja + tanggal + rentang waktu overlap) sebelum admin bisa confirm, kalau bentrok admin dapat pesan error yang jelas untuk pilih meja lain
+- [x] Meja **tidak langsung terkunci** saat reservasi baru masuk (`PENDING`) — baru status meja ikut berubah (`RESERVED`/`OCCUPIED`/`CLEANING`) begitu admin confirm/mark arrived/seated/completed, sesuai ARCHITECTURE.md §6 (mencegah reservasi spam mengunci slot)
+- [x] `ReservationForm` (`/order/reservasi`) — 3 langkah: tanggal+jam+jumlah tamu → pilih meja (otomatis rekomendasi kapasitas terkecil yang muat) → data diri → dapat kode reservasi
+- [x] `ReservationStatus` (`/order/reservasi/:id`) — status realtime dengan pesan berbeda per status
+- [x] `ReservationsManagement` (`/app/reservations`) — filter tanggal (default hari ini) + status + search, tombol aksi (Konfirmasi/Tolak/Batalkan/Tandai Datang/Duduk/Selesai/Tidak Hadir) otomatis sesuai status saat ini
+
 ## Cara menjalankan (di komputer Anda — environment saya tidak punya akses jaringan)
 
 ```bash
@@ -69,7 +77,6 @@ Deploy security rules (jalankan lagi tiap `firestore.rules` berubah): `firebase 
 
 ## Yang BELUM dibuat (menyusul sesuai roadmap di ARCHITECTURE.md §9)
 
-- Step 10: Reservation booking engine (logic sudah dirancang di ARCHITECTURE.md §6, UI & service layer belum)
 - Step 11: Owner dashboard + reports
 - Step 12: PWA polish, offline banner, QA pass
 
@@ -78,7 +85,7 @@ Deploy security rules (jalankan lagi tiap `firestore.rules` berubah): `firebase 
 1. **Konfirmasi harga** untuk 10 item yang bentrok antar foto (`MENU-DATA.md` §2), dan apakah item di §3 (Nugget Hotplate, Gado-gado, Somay) masih dijual.
 2. Foto ulang bagian "Menu Baru" di Foto 1 yang harganya terpotong (`MENU-DATA.md` §4), kalau item-item itu masih relevan.
 3. **Untuk testing Kitchen Display & Cashier**: butuh akun staff dengan role `KITCHEN_CASHIER` (bukan cuma OWNER) — buat manual sama seperti akun OWNER, tapi field `role` isi `KITCHEN_CASHIER`.
-4. Modul mana selanjutnya: Reservation, atau langsung Owner Dashboard?
+4. Modul terakhir: Owner Dashboard + Reports, lanjut sekarang?
 
 ## Setup akun staff pertama (perlu sebelum masuk /app/*)
 
