@@ -64,6 +64,12 @@ Lihat `MENU-DATA.md` untuk sumber data menu dan item yang masih perlu verifikasi
 - [x] `ReservationStatus` (`/order/reservasi/:id`) — status realtime dengan pesan berbeda per status
 - [x] `ReservationsManagement` (`/app/reservations`) — filter tanggal (default hari ini) + status + search, tombol aksi (Konfirmasi/Tolak/Batalkan/Tandai Datang/Duduk/Selesai/Tidak Hadir) otomatis sesuai status saat ini
 
+**Step 11 — Owner Dashboard + Reports**
+- [x] `reportService.js` — query rentang tanggal (bukan realtime, karena laporan bisa mundur jauh ke belakang melebihi cap 200-500 dokumen yang dipakai modul lain) + `aggregateReportData` (fungsi agregasi bersama yang dipakai Dashboard maupun Reports, angka konsisten di kedua tempat)
+- [x] `Dashboard` (`/app/dashboard`) — statistik hari ini: omzet, transaksi, item terjual, pesanan aktif, belum lunas, reservasi hari ini + jumlah tamu, menu terlaris (bar list sederhana, refresh tiap 60 detik)
+- [x] `Reports` (`/app/reports`, **Owner-only**) — filter preset (Hari Ini/7 Hari/30 Hari) + date range custom; breakdown: penjualan per kategori, metode pembayaran, dine-in vs take-away, order dibatalkan, reservasi tidak hadir
+- [x] **Fix rule**: `reservations` list diubah dari admin/owner-only jadi semua staff aktif (`isStaff`) — Dashboard yang bisa diakses semua role butuh baca jumlah reservasi hari ini, sementara aksi kelola reservasi (update) tetap admin/owner-only
+
 ## Cara menjalankan (di komputer Anda — environment saya tidak punya akses jaringan)
 
 ```bash
@@ -77,7 +83,6 @@ Deploy security rules (jalankan lagi tiap `firestore.rules` berubah): `firebase 
 
 ## Yang BELUM dibuat (menyusul sesuai roadmap di ARCHITECTURE.md §9)
 
-- Step 11: Owner dashboard + reports
 - Step 12: PWA polish, offline banner, QA pass
 
 ## Yang saya butuhkan dari Anda
@@ -85,7 +90,8 @@ Deploy security rules (jalankan lagi tiap `firestore.rules` berubah): `firebase 
 1. **Konfirmasi harga** untuk 10 item yang bentrok antar foto (`MENU-DATA.md` §2), dan apakah item di §3 (Nugget Hotplate, Gado-gado, Somay) masih dijual.
 2. Foto ulang bagian "Menu Baru" di Foto 1 yang harganya terpotong (`MENU-DATA.md` §4), kalau item-item itu masih relevan.
 3. **Untuk testing Kitchen Display & Cashier**: butuh akun staff dengan role `KITCHEN_CASHIER` (bukan cuma OWNER) — buat manual sama seperti akun OWNER, tapi field `role` isi `KITCHEN_CASHIER`.
-4. Modul terakhir: Owner Dashboard + Reports, lanjut sekarang?
+4. **Deploy ulang Firestore Security Rules** (`firebase deploy --only firestore:rules`) — ada perubahan di rule reservasi untuk Step 11 ini.
+5. Setelah ini, **Step 12 (PWA Polish + QA akhir)** adalah step TERAKHIR sebelum MVP dianggap selesai — lanjut sekarang?
 
 ## Setup akun staff pertama (perlu sebelum masuk /app/*)
 

@@ -9,7 +9,8 @@ const NAV_ITEMS = [
   { to: '/app/tables', label: 'Meja', roles: [ROLES.OWNER, ROLES.ADMIN] },
   { to: '/app/kitchen', label: 'Dapur', roles: [ROLES.OWNER, ROLES.KITCHEN_CASHIER] },
   { to: '/app/cashier', label: 'Kasir', roles: [ROLES.OWNER, ROLES.KITCHEN_CASHIER] },
-  { to: '/app/products', label: 'Menu', roles: [ROLES.OWNER, ROLES.ADMIN] }
+  { to: '/app/products', label: 'Menu', roles: [ROLES.OWNER, ROLES.ADMIN] },
+  { to: '/app/reports', label: 'Laporan', roles: [ROLES.OWNER] }
 ];
 
 export function AppShell({ children }) {

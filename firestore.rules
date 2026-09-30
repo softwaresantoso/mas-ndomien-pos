@@ -96,7 +96,10 @@ service cloud.firestore {
       match /reservations/{reservationId} {
         allow create: if true;
         allow get: if true;
-        allow list: if isAdminOrOwner(businessId);
+        // list is read-only visibility (e.g. today's reservation count on
+        // the shared Dashboard, which any staff role can view) — managing
+        // a reservation (update) stays admin/owner-only below.
+        allow list: if isStaff(businessId);
         allow update: if isAdminOrOwner(businessId);
         allow delete: if false;
       }
