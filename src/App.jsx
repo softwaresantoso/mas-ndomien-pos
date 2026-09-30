@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { OfflineBanner } from './components/OfflineBanner';
+import { InstallBanner } from './components/InstallBanner';
 import { ROLES } from './constants';
 
 // Customer-facing pages
@@ -32,6 +34,8 @@ export default function App() {
   return (
     <AuthProvider>
       <CartProvider>
+      <OfflineBanner />
+      <InstallBanner />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/order" replace />} />

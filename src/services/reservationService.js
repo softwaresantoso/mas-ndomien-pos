@@ -167,9 +167,10 @@ export function subscribeReservations(callback) {
   return onSnapshot(q, (snap) => callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))));
 }
 
-/** Realtime subscription for the customer reservation status page. */
+/** Realtime subscription for the customer reservation status page. Same
+ *  pending-sync metadata as subscribeOrder above. */
 export function subscribeReservation(reservationId, callback) {
-  return onSnapshot(reservationDoc(reservationId), (snap) => {
-    callback(snap.exists() ? { id: snap.id, ...snap.data() } : null);
+  return onSnapshot(reservationDoc(reservationId), { includeMetadataChanges: true }, (snap) => {
+    callback(snap.exists() ? { id: snap.id, ...snap.data(), _pendingSync: snap.metadata.hasPendingWrites } : null);
   });
 }

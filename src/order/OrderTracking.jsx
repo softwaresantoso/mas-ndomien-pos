@@ -44,6 +44,11 @@ export default function OrderTracking() {
       <p className="text-xs text-brand-dark/50">Nomor Pesanan</p>
       <h1 className="font-bold text-xl mb-3">{order.orderNumber}</h1>
       <Badge status={order.orderStatus}>{order.orderStatus}</Badge>
+      {order._pendingSync && (
+        <p className="text-xs text-status-pending font-semibold mt-2">
+          Menyinkronkan… pastikan koneksi internet stabil.
+        </p>
+      )}
 
       {isCancelled ? (
         <p className="mt-6 text-sm text-brand-red">Pesanan ini telah dibatalkan.</p>

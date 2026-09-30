@@ -37,6 +37,11 @@ export default function ReservationStatus() {
       <p className="text-xs text-brand-dark/50">Kode Reservasi</p>
       <h1 className="font-bold text-xl mb-3">{reservation.reservationCode}</h1>
       <Badge status={reservation.status}>{reservation.status}</Badge>
+      {reservation._pendingSync && (
+        <p className="text-xs text-status-pending font-semibold mt-2">
+          Menyinkronkan… pastikan koneksi internet stabil.
+        </p>
+      )}
 
       <p className="mt-4 text-base font-semibold">{STATUS_TEXT[reservation.status]}</p>
 

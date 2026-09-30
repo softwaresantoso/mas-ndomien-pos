@@ -113,10 +113,13 @@ export function subscribeActiveOrders(callback) {
   });
 }
 
-/** Realtime subscription for a single order — used by customer tracking page. */
+/** Realtime subscription for a single order — used by customer tracking
+ *  page. Includes metadata changes so the UI can show a "syncing" state
+ *  while a write made offline hasn't reached the server yet
+ *  (product-34: "data yang belum tersinkron diberi indikator"). */
 export function subscribeOrder(orderId, callback) {
-  return onSnapshot(orderDoc(orderId), (snap) => {
-    callback(snap.exists() ? { id: snap.id, ...snap.data() } : null);
+  return onSnapshot(orderDoc(orderId), { includeMetadataChanges: true }, (snap) => {
+    callback(snap.exists() ? { id: snap.id, ...snap.data(), _pendingSync: snap.metadata.hasPendingWrites } : null);
   });
 }
 

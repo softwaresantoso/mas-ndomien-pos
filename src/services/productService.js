@@ -1,8 +1,12 @@
-import { collection, doc, getDoc, getDocs, onSnapshot, query, where, orderBy } from 'firebase/firestore';
-import { db, BUSINESS_ID } from '../lib/firebase';
+import {
+  collection, doc, getDoc, getDocs, addDoc, updateDoc, onSnapshot, query, where, orderBy, serverTimestamp
+} from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, storage, BUSINESS_ID } from '../lib/firebase';
 
 const categoriesRef = () => collection(db, 'businesses', BUSINESS_ID, 'categories');
 const productsRef = () => collection(db, 'businesses', BUSINESS_ID, 'products');
+const productDoc = (id) => doc(db, 'businesses', BUSINESS_ID, 'products', id);
 
 /** Realtime categories, active only, sorted for menu tabs. */
 export function subscribeCategories(callback) {
@@ -21,6 +25,12 @@ export function subscribeProducts(callback) {
   return onSnapshot(q, (snap) => callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))));
 }
 
+/** Realtime ALL products (available or not, archived or not) — for the
+ *  admin Product Management list, which needs to see and toggle everything. */
+export function subscribeAllProductsAdmin(callback) {
+  return onSnapshot(productsRef(), (snap) => callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))));
+}
+
 /** One-time fetch of a single product by its Firestore doc id. */
 export async function getProductById(productId) {
   const snap = await getDoc(doc(productsRef(), productId));
@@ -35,3 +45,47 @@ export async function getProductBySlug(slug) {
   const match = snap.docs.find((d) => d.data().slug === slug);
   return match ? { id: match.id, ...match.data() } : null;
 }
+
+function slugify(name) {
+  return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+export async function createProduct(data) {
+  return addDoc(productsRef(), {
+    ...data,
+    slug: slugify(data.name),
+    isArchived: false,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  });
+}
+
+export async function updateProduct(productId, data) {
+  const patch = { ...data, updatedAt: serverTimestamp() };
+  if (data.name) patch.slug = slugify(data.name);
+  return updateDoc(productDoc(productId), patch);
+}
+
+/** Soft delete only — never hard-delete a product that may already be
+ *  referenced by historical orders (product-28: "JANGAN menghapus
+ *  transaksi historis hanya karena produk dihapus dari menu"). */
+export async function setProductArchived(productId, isArchived) {
+  return updateDoc(productDoc(productId), { isArchived, updatedAt: serverTimestamp() });
+}
+
+export async function setProductAvailable(productId, isAvailable) {
+  return updateDoc(productDoc(productId), { isAvailable, updatedAt: serverTimestamp() });
+}
+
+export async function setProductFeatured(productId, isFeatured) {
+  return updateDoc(productDoc(productId), { isFeatured, updatedAt: serverTimestamp() });
+}
+
+/** Uploads a product photo to Firebase Storage and returns its public
+ *  download URL, ready to store as the product's imageUrl. */
+export async function uploadProductImage(productId, file) {
+  const fileRef = ref(storage, `products/${productId}/${Date.now()}-${file.name}`);
+  await uploadBytes(fileRef, file);
+  return getDownloadURL(fileRef);
+}
+

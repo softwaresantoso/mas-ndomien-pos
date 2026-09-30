@@ -70,6 +70,19 @@ Lihat `MENU-DATA.md` untuk sumber data menu dan item yang masih perlu verifikasi
 - [x] `Reports` (`/app/reports`, **Owner-only**) — filter preset (Hari Ini/7 Hari/30 Hari) + date range custom; breakdown: penjualan per kategori, metode pembayaran, dine-in vs take-away, order dibatalkan, reservasi tidak hadir
 - [x] **Fix rule**: `reservations` list diubah dari admin/owner-only jadi semua staff aktif (`isStaff`) — Dashboard yang bisa diakses semua role butuh baca jumlah reservasi hari ini, sementara aksi kelola reservasi (update) tetap admin/owner-only
 
+**Fix penting — Product Management (admin) yang sebelumnya kelewat**
+- [x] `productService.js` — tambah fungsi admin: `subscribeAllProductsAdmin`, `createProduct`, `updateProduct`, `setProductArchived`/`Available`/`Featured` (soft delete only, sesuai brief §28: jangan hapus produk yang sudah pernah dipakai transaksi), `uploadProductImage` (ke Firebase Storage)
+- [x] `ProductsManagement` (`/app/products`) — search + filter kategori, list produk dengan quick-toggle (Tersedia/Populer), tombol Arsipkan. **Owner** full akses, **Admin** view-only (checkbox/tombol edit otomatis disabled, sesuai permission matrix)
+- [x] `ProductFormModal` — upload foto ke Storage, editor modifier group (tambah/hapus grup & opsi, tipe pilih-1/pilih-banyak, wajib/opsional, harga tambahan per opsi)
+- [x] `storage.rules` (baru) — foto produk publicly readable, upload butuh login staff
+- [x] Belum ada: halaman Category Management terpisah — untuk sekarang kategori baru masih perlu ditambah manual lewat Firebase Console (kategori sudah stabil dari seed awal, jarang berubah untuk resto kecil)
+
+**Step 12 — PWA Polish & QA Akhir**
+- [x] `useOnlineStatus` + `OfflineBanner` — banner merah "Koneksi terputus" saat offline, banner hijau "Koneksi kembali normal" sebentar saat online lagi (dipasang global, muncul di semua halaman)
+- [x] `useInstallPrompt` + `InstallBanner` — banner custom "Install aplikasi ini" muncul begitu browser mendukung (menggantikan UI install default browser yang tidak konsisten)
+- [x] Indikator "Menyinkronkan…" di halaman tracking order & reservasi customer — muncul kalau ada write yang masih pending saat koneksi terputus (`hasPendingWrites` dari Firestore snapshot metadata)
+- [x] `QA-CHECKLIST.md` — checklist lengkap yang perlu dites manual di device asli (saya tidak punya akses ke HP/browser Anda), mencakup semua role, PWA install, offline behavior, console error check, sampai data harga menu
+
 ## Cara menjalankan (di komputer Anda — environment saya tidak punya akses jaringan)
 
 ```bash
@@ -83,15 +96,30 @@ Deploy security rules (jalankan lagi tiap `firestore.rules` berubah): `firebase 
 
 ## Yang BELUM dibuat (menyusul sesuai roadmap di ARCHITECTURE.md §9)
 
-- Step 12: PWA polish, offline banner, QA pass
+- Category/Customer/Inventory/User/Settings management (`/app/categories`, `/app/customers`, `/app/inventory`, `/app/users`, `/app/settings`) — belum dirouting sama sekali, sengaja ditunda karena kategori sudah stabil dari seed awal dan Phase 2/3 di ARCHITECTURE.md. Untuk sekarang, akun staff baru & kategori baru masih perlu dibuat manual lewat Firebase Console.
+- Logo asli (masih placeholder monogram "MN")
+- **Lihat `QA-CHECKLIST.md`** untuk daftar lengkap yang perlu dites manual sebelum benar-benar dianggap siap dijual — ada beberapa (device asli, install PWA, dsb) yang tidak bisa saya verifikasi dari sini.
 
 ## Yang saya butuhkan dari Anda
 
 1. **Konfirmasi harga** untuk 10 item yang bentrok antar foto (`MENU-DATA.md` §2), dan apakah item di §3 (Nugget Hotplate, Gado-gado, Somay) masih dijual.
 2. Foto ulang bagian "Menu Baru" di Foto 1 yang harganya terpotong (`MENU-DATA.md` §4), kalau item-item itu masih relevan.
 3. **Untuk testing Kitchen Display & Cashier**: butuh akun staff dengan role `KITCHEN_CASHIER` (bukan cuma OWNER) — buat manual sama seperti akun OWNER, tapi field `role` isi `KITCHEN_CASHIER`.
-4. **Deploy ulang Firestore Security Rules** (`firebase deploy --only firestore:rules`) — ada perubahan di rule reservasi untuk Step 11 ini.
-5. Setelah ini, **Step 12 (PWA Polish + QA akhir)** adalah step TERAKHIR sebelum MVP dianggap selesai — lanjut sekarang?
+4. Setup Firebase Storage rules kalau belum (lihat bagian di bawah).
+5. **Jalankan `QA-CHECKLIST.md`** sebelum mengumumkan project ini "selesai" ke pemilik resto.
+
+## Setup Firebase Storage Rules (baru — dibutuhkan untuk upload foto produk)
+
+Berbeda dari Firestore, Storage butuh init & deploy terpisah:
+
+```bash
+firebase init storage
+```
+Saat ditanya "What file should be used for Storage Rules?" → terima default `storage.rules` (sudah saya buatkan). Kalau ditanya overwrite, jawab **N**.
+
+```bash
+firebase deploy --only storage
+```
 
 ## Setup akun staff pertama (perlu sebelum masuk /app/*)
 
