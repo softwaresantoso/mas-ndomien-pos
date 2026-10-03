@@ -45,15 +45,20 @@ export async function createOrder({ orderType, tableId, customerName, customerPh
   }
 
   return runTransaction(db, async (transaction) => {
+    // Firestore transactions require every read before any write, so the
+    // business settings read happens here, before generateOrderNumber's
+    // own read/write of the counter doc.
+    const businessSnap = await transaction.get(doc(db, 'businesses', BUSINESS_ID));
+    const business = businessSnap.exists() ? businessSnap.data() : {};
+
     const subtotal = items.reduce((sum, item) => {
       const modifierTotal = (item.modifiers || []).reduce((s, m) => s + (m.priceDelta || 0), 0);
       return sum + (item.price + modifierTotal) * item.qty;
     }, 0);
 
-    // Tax/service charge percentages come from business settings, read
-    // inside the same transaction for consistency — wired up once
-    // src/services/businessService.js lands in the next step.
-    const total = subtotal; // discount/tax applied once businessService is in place
+    const tax = business.tax?.enabled ? Math.round(subtotal * (business.tax.percent / 100)) : 0;
+    const serviceCharge = business.serviceCharge?.enabled ? Math.round(subtotal * (business.serviceCharge.percent / 100)) : 0;
+    const total = subtotal + tax + serviceCharge; // no discount feature yet — always 0
 
     const orderNumber = await generateOrderNumber(transaction);
     const newDocRef = doc(ordersRef());
@@ -67,8 +72,8 @@ export async function createOrder({ orderType, tableId, customerName, customerPh
       items,
       subtotal,
       discount: 0,
-      tax: 0,
-      serviceCharge: 0,
+      tax,
+      serviceCharge,
       total,
       orderStatus: ORDER_STATUS.PENDING,
       paymentStatus: PAYMENT_STATUS.UNPAID,

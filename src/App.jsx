@@ -26,6 +26,7 @@ import Kitchen from './app/Kitchen';
 import Cashier from './app/Cashier';
 import ProductsManagement from './app/ProductsManagement';
 import Reports from './app/Reports';
+import Settings from './app/Settings';
 import Forbidden from './app/Forbidden';
 
 const STAFF_ALL = [ROLES.OWNER, ROLES.ADMIN, ROLES.KITCHEN_CASHIER];
@@ -77,6 +78,9 @@ export default function App() {
           } />
           <Route path="/app/reports" element={
             <ProtectedRoute allow={[ROLES.OWNER]}><Reports /></ProtectedRoute>
+          } />
+          <Route path="/app/settings" element={
+            <ProtectedRoute allow={[ROLES.OWNER]}><Settings /></ProtectedRoute>
           } />
 
           <Route path="*" element={<Navigate to="/order" replace />} />

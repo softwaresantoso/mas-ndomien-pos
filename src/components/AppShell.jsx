@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { PoweredBySantoSoft } from './PoweredBySantoSoft';
 import { ROLES } from '../constants';
 
 const NAV_ITEMS = [
@@ -10,7 +11,8 @@ const NAV_ITEMS = [
   { to: '/app/kitchen', label: 'Dapur', roles: [ROLES.OWNER, ROLES.KITCHEN_CASHIER] },
   { to: '/app/cashier', label: 'Kasir', roles: [ROLES.OWNER, ROLES.KITCHEN_CASHIER] },
   { to: '/app/products', label: 'Menu', roles: [ROLES.OWNER, ROLES.ADMIN] },
-  { to: '/app/reports', label: 'Laporan', roles: [ROLES.OWNER] }
+  { to: '/app/reports', label: 'Laporan', roles: [ROLES.OWNER] },
+  { to: '/app/settings', label: 'Pengaturan', roles: [ROLES.OWNER] }
 ];
 
 export function AppShell({ children }) {
@@ -45,6 +47,7 @@ export function AppShell({ children }) {
           <p className="text-xs text-brand-dark/50 mb-2">{staffProfile?.name} · {role}</p>
           <button onClick={handleLogout} className="text-xs font-semibold text-brand-red">Keluar</button>
         </div>
+        <PoweredBySantoSoft className="!py-2" />
       </aside>
 
       {/* Content */}

@@ -94,6 +94,14 @@ npm run dev
 
 Deploy security rules (jalankan lagi tiap `firestore.rules` berubah): `firebase deploy --only firestore:rules`
 
+**Step 13 — Settings page + Powered by SantoSoft (mulai productization ke klien lain)**
+- [x] `businessService.js` — tambah `subscribeBusinessInfo`, `updateBusinessInfo`, `uploadBusinessLogo`
+- [x] `Settings` (`/app/settings`, **Owner-only**) — edit nama bisnis, logo, alamat, telepon/WA, jam buka, pajak & service charge (persen + toggle aktif), durasi default reservasi — semua langsung dari UI, tidak perlu lagi sentuh Firebase Console
+- [x] **Tutup loop lama**: `createOrder` sebelumnya selalu set `tax: 0, serviceCharge: 0` (ditandai TODO sejak Step 1) — sekarang beneran dihitung dari Settings, dalam transaction yang sama dengan pembuatan order. `Checkout.jsx` juga diupdate supaya customer lihat rincian pajak/service charge **sebelum** konfirmasi, jadi tidak ada selisih antara yang dilihat dan yang tersimpan
+- [x] `storage.rules` — tambah path `business/**` untuk upload logo
+- [x] Logo bisnis (kalau diisi di Settings) otomatis tampil di hero halaman customer
+- [x] **"Powered by SantoSoft"** — dipasang di `OrderLanding` (halaman pertama yang dilihat SETIAP customer scan QR) dan sidebar `AppShell` (dilihat staff tiap hari). Logo sudah dioptimasi (702KB → 14KB, background dibuat transparan) dan disimpan di `public/branding/santosoft-logo.png`
+
 ## Yang BELUM dibuat (menyusul sesuai roadmap di ARCHITECTURE.md §9)
 
 - Category/Customer/Inventory/User/Settings management (`/app/categories`, `/app/customers`, `/app/inventory`, `/app/users`, `/app/settings`) — belum dirouting sama sekali, sengaja ditunda karena kategori sudah stabil dari seed awal dan Phase 2/3 di ARCHITECTURE.md. Untuk sekarang, akun staff baru & kategori baru masih perlu dibuat manual lewat Firebase Console.

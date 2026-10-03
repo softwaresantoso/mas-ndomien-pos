@@ -8,6 +8,7 @@ import { Button } from '../components/ui/Button';
 import { Skeleton } from '../components/ui/Skeleton';
 import { ProductCard } from '../components/order/ProductCard';
 import { StickyCartBar } from '../components/order/StickyCartBar';
+import { PoweredBySantoSoft } from '../components/PoweredBySantoSoft';
 
 export default function OrderLanding() {
   const [searchParams] = useSearchParams();
@@ -58,6 +59,9 @@ export default function OrderLanding() {
         <p className="text-xs uppercase tracking-wide text-white/70">
           {table ? `Meja ${table.tableNumber}` : 'Selamat datang di'}
         </p>
+        {business?.logoUrl && (
+          <img src={business.logoUrl} alt={business.name} className="h-10 w-auto object-contain mb-2" />
+        )}
         <h1 className="text-2xl font-bold mt-1">{business?.name || 'Pondok Es Teler Mas Ndomien'}</h1>
         <div className="flex gap-3 mt-5">
           <Link to="/order/menu" className="flex-1">
@@ -102,6 +106,8 @@ export default function OrderLanding() {
           </div>
         )}
       </div>
+
+      <PoweredBySantoSoft />
 
       <StickyCartBar />
     </div>

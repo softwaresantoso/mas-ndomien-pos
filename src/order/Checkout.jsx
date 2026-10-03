@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { createOrder } from '../services/orderService';
+import { getBusinessInfo } from '../services/businessService';
 import { Button } from '../components/ui/Button';
 import { formatRupiah } from '../lib/format';
 import { ORDER_TYPE } from '../constants';
@@ -15,6 +16,18 @@ export default function Checkout() {
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [business, setBusiness] = useState(null);
+
+  // Fetched so the pre-checkout total matches exactly what createOrder
+  // computes server-side (same tax/service-charge settings) — no surprise
+  // difference between what the customer saw and what gets charged.
+  useEffect(() => {
+    getBusinessInfo().then(setBusiness);
+  }, []);
+
+  const tax = business?.tax?.enabled ? Math.round(subtotal * (business.tax.percent / 100)) : 0;
+  const serviceCharge = business?.serviceCharge?.enabled ? Math.round(subtotal * (business.serviceCharge.percent / 100)) : 0;
+  const total = subtotal + tax + serviceCharge;
 
   const isTakeAway = orderType === ORDER_TYPE.TAKE_AWAY;
   const canSubmit = items.length > 0 && orderType && (!isTakeAway || customerName.trim().length > 0) && !submitting;
@@ -60,9 +73,14 @@ export default function Checkout() {
             </div>
           ))}
         </div>
-        <div className="flex justify-between font-bold text-sm mt-3 pt-3 border-t border-black/5">
+        <div className="text-sm text-brand-dark/70 space-y-1 mt-3 pt-3 border-t border-black/5">
+          <div className="flex justify-between"><span>Subtotal</span><span>{formatRupiah(subtotal)}</span></div>
+          {tax > 0 && <div className="flex justify-between"><span>Pajak ({business.tax.percent}%)</span><span>{formatRupiah(tax)}</span></div>}
+          {serviceCharge > 0 && <div className="flex justify-between"><span>Service Charge ({business.serviceCharge.percent}%)</span><span>{formatRupiah(serviceCharge)}</span></div>}
+        </div>
+        <div className="flex justify-between font-bold text-sm mt-2 pt-2 border-t border-black/5">
           <span>Total</span>
-          <span>{formatRupiah(subtotal)}</span>
+          <span>{formatRupiah(total)}</span>
         </div>
       </div>
 
@@ -103,7 +121,7 @@ export default function Checkout() {
 
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-black/5 p-4">
         <Button className="w-full" disabled={!canSubmit} onClick={handleSubmit}>
-          {submitting ? 'Mengirim pesanan…' : `Buat Pesanan — ${formatRupiah(subtotal)}`}
+          {submitting ? 'Mengirim pesanan…' : `Buat Pesanan — ${formatRupiah(total)}`}
         </Button>
       </div>
     </div>
