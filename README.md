@@ -94,6 +94,13 @@ npm run dev
 
 Deploy security rules (jalankan lagi tiap `firestore.rules` berubah): `firebase deploy --only firestore:rules`
 
+**Fix — Navigasi mobile staff (drawer menu)**
+- [x] Masalah: bottom-nav mobile menampung sampai 9 item untuk role Owner (Dashboard/Order/Reservasi/Meja/Dapur/Kasir/Menu/Laporan/Pengaturan) — kepencet-pencet, teks terlalu kecil
+- [x] `AppShell` di mobile sekarang: top bar tipis (ikon ☰ + judul halaman aktif + ikon pintas Dashboard di kanan) → tap ☰ buka **drawer slide dari samping** berisi semua menu, tutup otomatis saat pilih menu atau tap area gelap di luar drawer
+- [x] Desktop tidak berubah (sidebar tetap, ruang di layar lebar tidak masalah)
+- [x] Dashboard selalu satu tap lewat ikon rumah di top bar, sesuai request "Dashboard sebagai tampilan utama"
+- [x] Catatan kecil: beberapa halaman admin masih punya padding bawah ekstra (`pb-16`) sisa dari desain bottom-nav lama — kosmetik saja, tidak mengganggu fungsi, bisa dirapikan nanti kalau mau
+
 **Fix — Staff entry point di PWA terinstall**
 - [x] Masalah: `start_url` PWA ("/order") bikin staff yang install app selalu mendarat di halaman customer, tanpa jalan jelas ke area mereka
 - [x] `OrderLanding` sekarang: kalau staff **belum login**, muncul link kecil "Staff Login" di pojok kanan atas (tidak mengganggu tampilan customer). Kalau staff **sudah pernah login** (sesi tersimpan), muncul bar pintas "Login sebagai {role} · Buka Dashboard →" di paling atas — jadi tiap buka app, staff langsung lihat jalan ke dashboard mereka tanpa perlu ketik URL manual
