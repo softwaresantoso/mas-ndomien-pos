@@ -7,6 +7,15 @@
 // Ndomien"). Items with conflicting or unreadable prices are listed in
 // MENU-DATA.md and intentionally NOT included here — see that file for
 // what still needs owner confirmation before it can be added.
+//
+// ============================================================
+// ✏️ EDIT PER CLIENT — see ONBOARDING.md Fase 3
+// This whole file is Mas Ndomien's specific menu data. For a new client,
+// replace BUSINESS_ID, CATEGORIES and PRODUCTS below with that client's
+// own data (extracted from their menu photos the same conservative way —
+// never guess an unreadable or conflicting price, flag it instead, same
+// as MENU-DATA.md did here).
+// ============================================================
 
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
@@ -16,9 +25,9 @@ const serviceAccount = JSON.parse(readFileSync('./serviceAccountKey.json', 'utf-
 initializeApp({ credential: cert(serviceAccount) });
 const db = getFirestore();
 
-const BUSINESS_ID = process.env.VITE_BUSINESS_ID || 'mas-ndomien';
+const BUSINESS_ID = process.env.VITE_BUSINESS_ID || 'mas-ndomien'; // ✏️ EDIT PER CLIENT
 
-const CATEGORIES = [
+const CATEGORIES = [ // ✏️ EDIT PER CLIENT
   { slug: 'menu-spesial', name: 'Menu Spesial', sortOrder: 1 },
   { slug: 'menu-makanan', name: 'Menu Makanan', sortOrder: 2 },
   { slug: 'nasi-goreng', name: 'Nasi Goreng', sortOrder: 3 },
@@ -34,7 +43,7 @@ const CATEGORIES = [
 
 // station: 'kitchen' for food, 'beverage' for drinks — drives Kitchen
 // Display System routing later (product-21).
-const PRODUCTS = [
+const PRODUCTS = [ // ✏️ EDIT PER CLIENT
   // Menu Spesial
   p('Paket Keluarga', 'menu-spesial', 110000, 'kitchen', {
     description: 'Ayam panggang jowo utuh + nasi + lalapan & urapan + es teh, untuk 5 orang', isFeatured: true }),
@@ -156,6 +165,10 @@ function minuman(baseName, price) {
 async function seed() {
   const businessRef = db.collection('businesses').doc(BUSINESS_ID);
 
+  // ✏️ EDIT PER CLIENT — or leave as a placeholder and fill it in properly
+  // via /app/settings after the first deploy (Fase 4 of ONBOARDING.md);
+  // this set() uses merge:true so it won't clobber Settings-page edits
+  // if the script is re-run later.
   await businessRef.set({
     name: 'Pondok Es Teler Mas Ndomien',
     currency: 'IDR',

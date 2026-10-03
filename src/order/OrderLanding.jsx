@@ -4,6 +4,7 @@ import { getBusinessInfo } from '../services/businessService';
 import { getTableById } from '../services/tableService';
 import { subscribeCategories, subscribeProducts } from '../services/productService';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/Button';
 import { Skeleton } from '../components/ui/Skeleton';
 import { ProductCard } from '../components/order/ProductCard';
@@ -14,6 +15,7 @@ export default function OrderLanding() {
   const [searchParams] = useSearchParams();
   const tableIdFromQr = searchParams.get('table');
   const { bindTable, tableId } = useCart();
+  const { firebaseUser, isActive, role } = useAuth();
 
   const [business, setBusiness] = useState(null);
   const [table, setTable] = useState(null);
@@ -52,8 +54,30 @@ export default function OrderLanding() {
 
   const featured = products.filter((p) => p.isFeatured).slice(0, 6);
 
+  // Staff who already logged in before (session persists across app
+  // launches) get a quick way back to their dashboard — otherwise an
+  // installed PWA always opens to this customer page with no visible
+  // path to the staff area (the manifest's start_url is customer-first
+  // since most installs are customers; see ONBOARDING.md for context).
+  const showStaffShortcut = firebaseUser && isActive && role;
+
   return (
     <div className="pb-28">
+      {showStaffShortcut ? (
+        <Link
+          to="/app/dashboard"
+          className="block bg-brand-dark text-white text-sm font-semibold text-center py-2.5"
+        >
+          Login sebagai {role} · Buka Dashboard →
+        </Link>
+      ) : (
+        <div className="flex justify-end px-4 pt-3">
+          <Link to="/login" className="text-xs text-brand-dark/40 font-medium underline">
+            Staff Login
+          </Link>
+        </div>
+      )}
+
       {/* Hero */}
       <div className="bg-brand-red text-white px-5 pt-8 pb-10 rounded-b-3xl">
         <p className="text-xs uppercase tracking-wide text-white/70">

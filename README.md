@@ -94,6 +94,17 @@ npm run dev
 
 Deploy security rules (jalankan lagi tiap `firestore.rules` berubah): `firebase deploy --only firestore:rules`
 
+**Fix — Staff entry point di PWA terinstall**
+- [x] Masalah: `start_url` PWA ("/order") bikin staff yang install app selalu mendarat di halaman customer, tanpa jalan jelas ke area mereka
+- [x] `OrderLanding` sekarang: kalau staff **belum login**, muncul link kecil "Staff Login" di pojok kanan atas (tidak mengganggu tampilan customer). Kalau staff **sudah pernah login** (sesi tersimpan), muncul bar pintas "Login sebagai {role} · Buka Dashboard →" di paling atas — jadi tiap buka app, staff langsung lihat jalan ke dashboard mereka tanpa perlu ketik URL manual
+- [x] Tambah `env(safe-area-inset-top/bottom)` global di `index.css` — supaya konten (termasuk bar baru ini) tidak ketutupan status bar/notch Android saat PWA dibuka standalone
+
+**Step 14 — Proses onboarding klien baru (productization lanjutan)**
+- [x] `ONBOARDING.md` — SOP lengkap 6 fase (Intake → Infrastruktur → Kustomisasi kode → Seed data → Setup akun → QA → Handover) untuk tiap klien baru di model clone/template
+- [x] `CLIENT-INTAKE.md` — form pertanyaan untuk dikirim ke calon klien SEBELUM mulai kerja teknis (pelajaran dari Mas Ndomien: mulai tanpa foto menu yang jelas bikin proses berhenti di tengah)
+- [x] `scripts/seed-menu.js` — ditandai jelas bagian mana yang **wajib diedit per klien** (`✏️ EDIT PER CLIENT`), supaya tidak ketinggalan ganti saat clone ke resto lain
+- [x] Dicatat jujur di `ONBOARDING.md`: apa yang masih perlu bantuan manual Anda per klien (buat akun staf baru, tambah kategori) — supaya tidak jadi janji kosong ke calon klien soal self-service penuh
+
 **Step 13 — Settings page + Powered by SantoSoft (mulai productization ke klien lain)**
 - [x] `businessService.js` — tambah `subscribeBusinessInfo`, `updateBusinessInfo`, `uploadBusinessLogo`
 - [x] `Settings` (`/app/settings`, **Owner-only**) — edit nama bisnis, logo, alamat, telepon/WA, jam buka, pajak & service charge (persen + toggle aktif), durasi default reservasi — semua langsung dari UI, tidak perlu lagi sentuh Firebase Console
